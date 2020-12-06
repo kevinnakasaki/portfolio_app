@@ -21,7 +21,8 @@ env/
 venv/ 
 ENV/ 
 env.bak/ 
-venv.bak/ 
+venv.bak/
+secrets.json
 
 # Jupyter Notebook 
 .ipynb_checkpoints 

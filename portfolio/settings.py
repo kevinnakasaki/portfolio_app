@@ -11,6 +11,21 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import json
+from django.core.exceptions import ImproperlyConfigured
+
+
+with open("secrets.json") as f:
+    secrets = json.loads(f.read())
+
+
+def get_secret(setting, secrets=secrets):
+    """Get the secret variable or return explicit exception."""
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {0} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,10 +35,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '5n_-57=j)89$*q^=g11q681&j37&38uch_7*)6p-4rou%^-+da'
+SECRET_KEY = get_secret("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = []
 
@@ -81,11 +96,11 @@ AUTH_USER_MODEL = 'users.CustomUser'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432
+        'NAME': get_secret("DB_NAME"),
+        'USER': get_secret("DB_USER"),
+        'PASSWORD': get_secret("DB_PASSWORD"),
+        'HOST': get_secret("DB_HOST"),
+        'PORT': get_secret("DB_PORT")
     }
 }
 
@@ -127,3 +142,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]

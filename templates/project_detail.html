@@ -8,7 +8,8 @@
         <img class="projectcover" src="{{ project.cover.url }}" 
         alt="{{ project.title }}">
     {% endif %}
-    <h2><a href="">{{ project.title }}</a></h2>
-    <p>Description: {{ project.description }}</p>
+    <h2 class="text-black">{{ project.title }}</h2>
+    <p class="mb-0 text-black-50">Description: {{ project.description }}</p>
+    <hr class="d-none d-lg-block mb-0 ml-0"/>  
 </div>
 {% endblock content %}

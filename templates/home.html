@@ -1,7 +1,15 @@
 {% extends '_base.html' %}
 
-{% block title %}Home{% endblock title %}
+{% block title %}Projects{% endblock title %}
 
 {% block content %}
-<h1>Home</h1>
+    {% for project in projects %}
+    <div>
+        <h2>
+            <a href="{{ project.get_absolute_url }}">
+                {{ project.title }}
+            </a>
+        </h2>
+    </div>
+    {% endfor %}
 {% endblock content%}

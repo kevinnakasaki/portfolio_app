@@ -1,38 +1,33 @@
-from django.test import SimpleTestCase
-from django.urls import reverse, resolve
+from django.test import TestCase
+from django.urls import reverse
 
-from .views import HomePageView
+from .models import Project
 
 
-class HomePageTests(SimpleTestCase):
+class ProjectTests(TestCase):
     def setUp(self):
-        url = reverse('home')
-        self.response = self.client.get(url)
-    
-
-    def test_homepage_status_code(self):
-        self.assertEqual(self.response.status_code, 200)
-
-
-    def test_homepage_url_name(self):
-        self.assertEqual(self.response.status_code, 200)
-
-
-    def test_homepage_template(self):
-        self.assertTemplateUsed(self.response, 'home.html')
-
-
-    def test_homepage_contains_correct_html(self):
-        self.assertContains(self.response, 'Home')
-
-
-    def test_homepage_does_not_contains_incorrect_html(self):
-        self.assertNotContains(self.response, 'Main page')
-
-
-    def test_homepage_url_resolves_homepageview(self):
-        view = resolve('/')
-        self.assertEqual(
-            view.func.__name__,
-            HomePageView.as_view().__name__
+        self.project = Project.objects.create(
+            title="Projeto Teste 01",
+            description="Projeto de teste"
         )
+
+
+    def test_project_listing(self):
+        self.assertEqual(f'{self.project.title}', "Projeto Teste 01")
+        self.assertEqual(f'{self.project.description}', "Projeto de teste")
+
+
+    def test_project_list_view(self):
+        response = self.client.get(reverse('project_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Projeto Teste 01")
+        self.assertTemplateUsed(response, "home.html")
+
+
+    def test_project_detail_view(self):
+        response = self.client.get(self.project.get_absolute_url())
+        no_response = self.client.get('/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(no_response.status_code, 404)
+        self.assertContains(response, "Projeto Teste 01")
+        self.assertTemplateUsed(response, "project_detail.html")

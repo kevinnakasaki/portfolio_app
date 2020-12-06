@@ -11,6 +11,7 @@ class Project(models.Model):
     )
     title = models.CharField(max_length=200)
     description = models.TextField()
+    cover = models.ImageField(upload_to='covers/', blank=True)
 
 
     def __str__(self):
@@ -18,4 +19,4 @@ class Project(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('project_detail', args=[str(self.id)])
+        return reverse('project_detail', kwargs={'pk':str(self.id)})
